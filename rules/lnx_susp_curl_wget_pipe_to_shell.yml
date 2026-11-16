@@ -1,0 +1,42 @@
+title: Download Piped Directly Into A Shell On Linux
+id: 2a968788-43e8-445a-8d9b-ce8f3b904cd3
+status: experimental
+description: >
+  Detects a Linux shell started with a command line that downloads content with curl or wget and pipes it
+  straight into another shell. This pattern executes remote content without writing it to disk for review.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://attack.mitre.org/techniques/T1105/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.execution
+  - attack.t1059.004
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+      - '/dash'
+      - '/zsh'
+  selection_dl:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+  selection_pipe:
+    CommandLine|contains:
+      - '| sh'
+      - '|sh'
+      - '| bash'
+      - '|bash'
+      - '| zsh'
+  condition: selection_shell and selection_dl and selection_pipe
+falsepositives:
+  - Documented install one-liners run by administrators (package managers, developer tooling)
+  - Provisioning scripts (cloud-init, CI bootstrap)
+level: medium

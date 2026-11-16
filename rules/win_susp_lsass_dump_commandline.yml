@@ -1,0 +1,31 @@
+title: LSASS Memory Dump Via Command Line Tools
+id: ef03dad1-7a13-420d-a61c-058f4487aefa
+status: experimental
+description: >
+  Detects credential dumping of lsass.exe memory using rundll32 with comsvcs.dll MiniDump, or ProcDump
+  targeting lsass. Dumped memory can be parsed offline for password hashes and Kerberos material.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_comsvcs:
+    CommandLine|contains|all:
+      - 'comsvcs'
+      - 'minidump'
+  selection_procdump:
+    Image|endswith:
+      - '\procdump.exe'
+      - '\procdump64.exe'
+    CommandLine|contains: 'lsass'
+  condition: 1 of selection_*
+falsepositives:
+  - Authorised red-team or penetration-test activity
+  - Support engineers capturing a dump for a Microsoft case (rare, should be ticketed)
+level: high

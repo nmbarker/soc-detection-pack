@@ -1,0 +1,33 @@
+title: Certutil Used To Download A File
+id: 14523be8-c3cd-435b-a740-b33626435ed9
+status: experimental
+description: >
+  Detects certutil.exe fetching content from an HTTP(S) URL using the -urlcache or -verifyctl switches.
+  Certutil is a signed Windows binary frequently abused to download second-stage tools.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    - Image|endswith: '\certutil.exe'
+    - OriginalFileName: 'CertUtil.exe'
+  selection_urlcache:
+    CommandLine|contains|all:
+      - 'urlcache'
+      - 'http'
+  selection_verifyctl:
+    CommandLine|contains|all:
+      - 'verifyctl'
+      - 'http'
+  condition: selection_img and (selection_urlcache or selection_verifyctl)
+falsepositives:
+  - Rare: administrators retrieving certificate trust lists or CRLs by hand
+  - Some PKI health scripts
+level: high

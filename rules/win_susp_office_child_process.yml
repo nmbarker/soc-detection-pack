@@ -1,0 +1,45 @@
+title: Office Application Spawning Script Interpreter Or LOLBin
+id: 4d7a0c57-0fd4-48a0-8bc2-23ad488b43b9
+status: experimental
+description: >
+  Detects a Microsoft Office application starting a command shell, script host or common living-off-the-land
+  binary. This is the classic macro / malicious-document execution pattern after a phishing email.
+references:
+  - https://attack.mitre.org/techniques/T1204/002/
+  - https://attack.mitre.org/techniques/T1059/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.execution
+  - attack.t1204.002
+  - attack.t1059
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\winword.exe'
+      - '\excel.exe'
+      - '\powerpnt.exe'
+      - '\outlook.exe'
+      - '\msaccess.exe'
+      - '\mspub.exe'
+      - '\visio.exe'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\certutil.exe'
+      - '\bitsadmin.exe'
+  condition: selection_parent and selection_child
+falsepositives:
+  - Office add-ins and macro-enabled business workbooks that legitimately call cmd.exe or PowerShell
+  - Document-management or PDF plug-ins that shell out
+level: high

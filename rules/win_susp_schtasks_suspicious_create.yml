@@ -1,0 +1,41 @@
+title: Scheduled Task Created With Suspicious Action Or Path
+id: 095b27d2-9b5c-4a44-b475-d06ea6d4d92d
+status: experimental
+description: >
+  Detects schtasks.exe creating a task whose command points at a user-writable directory or invokes a script
+  interpreter / proxy-execution binary. Scheduled tasks are a common persistence and execution mechanism.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains: '/create'
+  selection_path:
+    CommandLine|contains:
+      - '\AppData\'
+      - '\Users\Public\'
+      - '\ProgramData\'
+      - '\Windows\Temp\'
+  selection_interp:
+    CommandLine|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'mshta'
+      - 'wscript'
+      - 'cscript'
+      - 'rundll32'
+      - 'regsvr32'
+  condition: selection_img and (selection_path or selection_interp)
+falsepositives:
+  - Software updaters that register tasks from AppData (browser, collaboration, remote-access clients)
+  - Admin scripts that schedule PowerShell maintenance jobs
+level: medium

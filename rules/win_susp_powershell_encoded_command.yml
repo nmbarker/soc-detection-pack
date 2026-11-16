@@ -1,0 +1,39 @@
+title: PowerShell Launched With Encoded Command
+id: 63370a96-5458-4255-a9bc-1fc5ecbd3463
+status: experimental
+description: >
+  Detects powershell.exe or pwsh.exe started with an encoded command switch (-enc, -ec, -EncodedCommand, -e).
+  Encoded commands hide script content from casual inspection and are common in malware loaders, phishing
+  payloads and hands-on-keyboard intrusions. Some management tools also use them legitimately.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://attack.mitre.org/techniques/T1027/010/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - attack.stealth
+  - attack.t1027.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    - Image|endswith:
+        - '\powershell.exe'
+        - '\pwsh.exe'
+    - OriginalFileName:
+        - 'PowerShell.EXE'
+        - 'pwsh.dll'
+  selection_flag:
+    CommandLine|contains:
+      - ' -enc'
+      - ' -ec '
+      - ' -e '
+      - ' /enc'
+  condition: selection_img and selection_flag
+falsepositives:
+  - Software deployment and monitoring agents that wrap scripts in -EncodedCommand
+  - Administrator automation and some installers
+level: medium

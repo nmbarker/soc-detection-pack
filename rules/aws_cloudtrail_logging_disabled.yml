@@ -1,0 +1,27 @@
+title: AWS CloudTrail Logging Stopped Or Trail Deleted
+id: 9db0ff39-1f00-4e7e-a452-626adf185aee
+status: experimental
+description: >
+  Detects the StopLogging or DeleteTrail API calls against AWS CloudTrail. Disabling audit logging is a
+  defense-evasion step used after account compromise.
+references:
+  - https://attack.mitre.org/techniques/T1685/002/
+author: Big Dipper
+date: 2026-11-16
+tags:
+  - attack.defense-impairment
+  - attack.t1685.002
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'cloudtrail.amazonaws.com'
+    eventName:
+      - 'StopLogging'
+      - 'DeleteTrail'
+  condition: selection
+falsepositives:
+  - Infrastructure-as-code changes that rebuild a trail
+  - Planned account decommissioning
+level: high
