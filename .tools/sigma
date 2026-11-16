@@ -1,0 +1,2 @@
+#!/bin/sh
+PYTHONPATH="$(dirname "$0")/pylib" exec python3 -m sigma.cli.main "$@"
