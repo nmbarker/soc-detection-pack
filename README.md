@@ -47,4 +47,4 @@ python3 tests/run_tests.py
 `run_tests.py` converts every rule to SQLite (and executes it over the sample events), Splunk SPL, and Elasticsearch Lucene (ECS Windows). It exits non-zero on any mismatch.
 
 ## Paid version
-Interest / waitlist: **[WAITLIST LINK PLACEHOLDER]** (to be replaced before announcing). A paid v1 would add 30-50 rules, more log sources, and tuned exception packs.
+Interested in a paid v1 (30-50 rules, more log sources, tuned exception packs)? Add a 👍 or comment on the waitlist issue: https://github.com/nmbarker/soc-detection-pack/issues/1 (GitHub reactions and comments are public; this is not an email list).
